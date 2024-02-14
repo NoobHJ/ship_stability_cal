@@ -6,7 +6,7 @@ def visualize_points_from_csv(csv_file):
     df = pd.read_csv(csv_file)
 
     # Extract coordinates
-    coordinates = df[['X_coordinate', 'Y_coordinate', 'Z_coordinate']].values
+    coordinates = df[['X', 'Y', 'Z']].values
 
     # Create a point cloud
     points = o3d.geometry.PointCloud()
@@ -17,7 +17,7 @@ def visualize_points_from_csv(csv_file):
 
 def main():
     # csv_file = "half_offset.csv"
-    csv_file = "distances_and_coordinates.csv"
+    csv_file = "./db/point_cloud.csv"
     visualize_points_from_csv(csv_file)
 
 if __name__ == "__main__":
