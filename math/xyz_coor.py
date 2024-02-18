@@ -1,4 +1,3 @@
-# src/csv.py
 import open3d as o3d
 import numpy as np
 import pandas as pd
@@ -6,8 +5,14 @@ import pandas as pd
 def save_point_cloud_to_csv(point_cloud, csv_file_path):
     # CSV 파일에 저장할 좌표 데이터 추출
     points = np.asarray(point_cloud.points)
+    
+    # y가 음수인 좌표 제거
+    points = points[points[:, 1] >= 0]
+    
+    # 좌표 데이터를 정수로 반올림
+    rounded_points = np.round(points).astype(int)
     # Pandas DataFrame으로 변환
-    df = pd.DataFrame(data=points, columns=["X", "Y", "Z"])
+    df = pd.DataFrame(data=rounded_points, columns=["X", "Y", "Z"])
     # CSV 파일로 저장
     df.to_csv(csv_file_path, index=False)
 
@@ -22,7 +27,8 @@ if __name__ == "__main__":
     coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=10, origin=[0, 0, 0])
 
     # mesh에서 10,000개의 점을 균일하게 샘플링하여 point cloud 생성
-    n_pts = 10_000
+    # n_pts = 10_000
+    n_pts = 100_00000
     point_cloud = mesh.sample_points_uniformly(n_pts)
 
     # CSV 파일 경로
