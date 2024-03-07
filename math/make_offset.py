@@ -32,3 +32,5 @@ result_csv_file = "../db/offset.csv"
 result_df.to_csv(result_csv_file, index=False)
 
 print("2D CSV 파일이 생성되었습니다:", result_csv_file)
+
+
