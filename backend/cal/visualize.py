@@ -16,7 +16,8 @@ def visualize_points_from_csv(csv_file):
     o3d.visualization.draw_geometries([points])
 
 def main():
-    csv_file = "../db/point_cloud.csv"
+    # csv_file = "../db/point_cloud.csv"
+    csv_file = "./db/point_cloud.csv"
     visualize_points_from_csv(csv_file)
 
 if __name__ == "__main__":

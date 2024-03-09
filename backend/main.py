@@ -8,6 +8,7 @@ from subprocess import run
 from cal.make_xyz import make_xyz
 from cal.make_offset import make_off
 from cal.cal_main import cal_run
+from cal.visualize import main
 
 # 현재 스크립트의 디렉토리를 기준으로 하위 디렉토리 생성
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -38,11 +39,11 @@ async def upload_stl(file: UploadFile):
 
         await make_xyz("./uploaded_stl_files/" + file.filename, "./db/"+filename_without_extension+"_xyz.csv")
         await make_off("./db/"+filename_without_extension+"_xyz.csv","./db/"+filename_without_extension+"_offset.csv")
-        await cal_run("./db/offset.csv")
+        await cal_run("./db/"+filename_without_extension+"_offset.csv")
+        # main()
 
         return JSONResponse(content={"message": "STL file uploaded successfully"})
     except Exception as e:
         print(e)
         return JSONResponse(content={"message": str(e)}, status_code=500)
-
 

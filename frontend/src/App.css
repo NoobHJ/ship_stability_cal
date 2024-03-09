@@ -43,3 +43,35 @@
   background-image: /* webpackIgnore: true */ url("../public/logo.svg");
   background-size: cover;
 }
+
+.background {
+  background-image: url("../public/backgrond.svg");
+  background-repeat: no-repeat;
+  background-position: center left;
+  background-size: contain;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
