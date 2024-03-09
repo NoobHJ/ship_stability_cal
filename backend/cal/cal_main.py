@@ -9,10 +9,10 @@ async def simpson(y0, y1, y2):
 async def simpson2(y0, y1, y2, y3):
     return (3/8) * (y0 + 3 * y1 + 3 * y2 + y3)
 
-async def moment_simpson(y0,y1,y2,s1,s2,s3):
+async def moment_simpson(y0, y1, y2, s1, s2, s3):
     return (1/3) * (y0 * s1 + 4 * y1 * s2 + y2 * s3)
 
-async def second_moment_simpson(y0,y1,y2,s1,s2,s3):
+async def second_moment_simpson(y0, y1, y2, s1, s2, s3):
     return (1/3)**3 * (y0 * s1 ** 2 + 4 * y1 * s2 ** 2 + y2 * s3 ** 2)
 
 async def calculate_waterplane_area(data, result_list):
@@ -23,6 +23,7 @@ async def calculate_waterplane_area(data, result_list):
                             data.iloc[i,j-1], 
                             data.iloc[i,j]))
         result_list.append(a)
+    return result_list
 
 async def calculate_volume(data, result_list):    
     if len(data) % 2 == 0:
@@ -39,6 +40,7 @@ async def calculate_volume(data, result_list):
                             data.iloc[-3],
                             data.iloc[-2],
                             data.iloc[-1]))
+    return result_list
 
 async def calculate_section_area(data, result_list):
     for j in range(len(data.columns)):
@@ -48,6 +50,7 @@ async def calculate_section_area(data, result_list):
                             data.iloc[i-1, j], 
                             data.iloc[i, j]))
         result_list.append(a)
+    return result_list
 
 async def calculate_moment_of_inertia(data, result_list, masscenter_x):
     for j in range(len(data.columns)):
@@ -61,6 +64,7 @@ async def calculate_moment_of_inertia(data, result_list, masscenter_x):
                                            data.iloc[i, j],
                                            s1, s2, s3))
         result_list.append(sum(a))
+    return result_list
 
 async def cal_run(offset_path):
     csv_file = offset_path
@@ -75,20 +79,20 @@ async def cal_run(offset_path):
 
     # waterplane_area 계산
     waterplane_area = []
-    await calculate_waterplane_area(offset, waterplane_area)
+    waterplane_area = await calculate_waterplane_area(offset, waterplane_area)
     half_of_waterplane_area = pd.DataFrame(waterplane_area).sum(axis=1)
 
     waterplane_volume = []
-    await calculate_volume(half_of_waterplane_area,waterplane_volume)
+    waterplane_volume = await calculate_volume(half_of_waterplane_area, waterplane_volume)
     print("volume from waterplane = ", sum(waterplane_volume)*2, "mm^3")
 
     #section_area계산
     section_area = []
-    await calculate_section_area(offset, section_area)
+    section_area = await calculate_section_area(offset, section_area)
     half_of_section_area = pd.DataFrame(section_area).sum(axis=1)
 
     section_volume = []
-    await calculate_volume(half_of_section_area,section_volume)
+    section_volume = await calculate_volume(half_of_section_area, section_volume)
     print("volume from section_volume = ", sum(section_volume)*2, "mm^3")
 
     # 배수량 구하기
@@ -151,15 +155,19 @@ async def cal_run(offset_path):
                                             s1, s2, s3))
 
     masscenter_z = sum(total_momentz)/(sum(waterplane_volume))
-    print("masscenter_z =",masscenter_z)
+    print("mass center z =",masscenter_z)
 
     # total_momentx_df = pd.DataFrame(total_momentz)
     # total_momentx_df.to_csv("../res/total_momentz.csv")
 
     # second moment I
     moment_of_inertia_tranceverse = []
-    await calculate_moment_of_inertia(offset, moment_of_inertia_tranceverse, masscenter_x)
+    moment_of_inertia_tranceverse = await calculate_moment_of_inertia(offset, moment_of_inertia_tranceverse, masscenter_x)
     print(len(moment_of_inertia_tranceverse))
     print(sum(moment_of_inertia_tranceverse))
+    return offset_path
 
-# await cal_run()
+
+# 호출 부분
+# result = await cal_run("./db/offset.csv")
+# print("Function returned:", result)

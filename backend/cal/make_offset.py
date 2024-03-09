@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def make_off(csv_file, result_csv_file):
+async def make_off(csv_file, result_csv_file):
     # CSV 파일 읽기
     df = pd.read_csv(csv_file)
 
