@@ -30,22 +30,22 @@
 
 @keyframes App-logo-spin {
   from {
-    transform: rotate(0deg);
+    transform: rotate(360deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(0deg);
   }
 }
 
 .logo {
   width: 100px;
   height: 100px;
-  background-image: /* webpackIgnore: true */ url("../public/logo.svg");
+  background-image: url("/logo.svg"); /* 절대 경로 사용 */
   background-size: cover;
 }
 
 .background {
-  background-image: url("../public/backgrond.svg");
+  background-image: url("/backgrond.svg"); /* 절대 경로 사용 */
   background-repeat: no-repeat;
   background-position: center left;
   background-size: contain;

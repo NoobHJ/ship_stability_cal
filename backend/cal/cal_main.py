@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+# import matplotlib.pyplot as plt
 
 # Simpson's Rule s는 1(mm or m)로 할거기 때문에 상관 없음
 async def simpson(y0, y1, y2):
@@ -157,17 +158,23 @@ async def cal_run(offset_path):
     masscenter_z = sum(total_momentz)/(sum(waterplane_volume))
     print("mass center z =",masscenter_z)
 
-    # total_momentx_df = pd.DataFrame(total_momentz)
-    # total_momentx_df.to_csv("../res/total_momentz.csv")
-
     # second moment I
     moment_of_inertia_tranceverse = []
     moment_of_inertia_tranceverse = await calculate_moment_of_inertia(offset, moment_of_inertia_tranceverse, masscenter_x)
     print(len(moment_of_inertia_tranceverse))
     print(sum(moment_of_inertia_tranceverse))
-    return offset_path
 
+    res = {
+    "volume from waterplane": sum(waterplane_volume) * 2,
+    "volume from section_volume": sum(section_volume) * 2,
+    "weight from section": sum(section_weight) * 2,
+    "weight from waterplane": sum(waterplane_weight)*2,
+    "design volume":total_weight / 1.025,
+    "design draft": design_draft,
+    "mass center x": masscenter_x,
+    "mass center y": 0,
+    "mass center z":masscenter_z,
+    "moment_of_inertia_tranceverse":sum(moment_of_inertia_tranceverse)
+    }
 
-# 호출 부분
-# result = await cal_run("./db/offset.csv")
-# print("Function returned:", result)
+    return res

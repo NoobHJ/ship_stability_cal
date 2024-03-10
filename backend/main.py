@@ -37,13 +37,13 @@ async def upload_stl(file: UploadFile):
         
         filename_without_extension = os.path.splitext(file.filename)[0]
 
-        await make_xyz("./uploaded_stl_files/" + file.filename, "./db/"+filename_without_extension+"_xyz.csv")
-        await make_off("./db/"+filename_without_extension+"_xyz.csv","./db/"+filename_without_extension+"_offset.csv")
-        await cal_run("./db/"+filename_without_extension+"_offset.csv")
-        # main()
+        xyz_result = await make_xyz("./uploaded_stl_files/" + file.filename, "./db/"+filename_without_extension+"_xyz.csv")
+        off_result = await make_off("./db/"+filename_without_extension+"_xyz.csv","./db/"+filename_without_extension+"_offset.csv")
+        cal_result = await cal_run("./db/"+filename_without_extension+"_offset.csv")
 
-        return JSONResponse(content={"message": "STL file uploaded successfully"})
+        combined_result = f"result(unit : mm, g): {cal_result}"
+
+        return JSONResponse(content={"message": combined_result})
     except Exception as e:
         print(e)
         return JSONResponse(content={"message": str(e)}, status_code=500)
-
