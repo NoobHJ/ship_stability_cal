@@ -1,14 +1,12 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def simpson(y0, y1, y2):
     return (1/3) * (y0 + 4 * y1 + y2)
 
 def moment_simpson(y0,y1,y2,s1,s2,s3):
     return (1/3) * (y0 * s1 + 4 * y1 * s2 + y2 * s3)
-
-def second_moment_simpson(y0,y1,y2,s1,s2,s3):
-    return (1/3)**3 * (y0 * s1 ** 2 + 4 * y1 * s2 ** 2 + y2 * s3 ** 2)
 
 def simpson_5_8_1(y0,y1,y2):
     return (1/12) * (5 * y0 + 8 * y1 - y2)
@@ -27,7 +25,7 @@ def calculate_volume(data, result_list):
             result_list.append(simpson_5_8_1(data[i-2],
                                 data[i-1],
                                 data[i]))
-    
+
 
 def calculate_section_area(data, result_list):
     for j in range(len(data.columns)):
@@ -88,20 +86,47 @@ def calculate_mass_center_z(data, waterplane_volume):
     masscenter_z = sum(total_momentz) / (sum(waterplane_volume))
     return masscenter_z
 
-def calculate_moment_of_inertia(data, result_list, masscenter_x):
+def calculate_second_moment_of_area(data, masscenter_x):
+    second_moment_area = []
     for j in range(len(data.columns)):
         a = []
         for i in range(2, len(data.index), 2):
-            s1 = -masscenter_x + 0.5 + i - 2
-            s2 = -masscenter_x + 0.5 + i - 1
-            s3 = -masscenter_x + 0.5 + i
-            a.append(second_moment_simpson(data.iloc[i-2, j], 
-                                           data.iloc[i-1, j], 
-                                           data.iloc[i, j],
-                                           s1, s2, s3))
-        result_list.append(sum(a))
+            s = -masscenter_x + 0.5 + i - 1  # 중심으로부터의 거리
+            area = simpson(data.iloc[i-2, j], data.iloc[i-1, j], data.iloc[i, j])
+            a.append(area)
+        second_moment_area.append(sum(a) * s ** 2) 
+
+    return second_moment_area
+
+def calculate_second_moment_of_mass(data, masscenter_x, section_weight):
+    second_moment_mass = []
+    for j in range(len(data.columns)):
+        distance = abs(- masscenter_x + (0.5 + j + 1))
+        second_moment_mass.append(section_weight[j-2] * distance ** 2)       
+    return second_moment_mass
+
+def second_moment_simpson(y0,y1,y2,s):
+    return (1/120) * (s **3) * ( 7 * y0  + 36 * y1 - 3 * y2)
+
+def calculate_second_moment_of_area(data, masscenter_x):
+    second_moment_area = []
+    for j in range(len(data.columns)):
+        a = []
+        for i in range(2, len(data.index), 2):
+            s = 1 #-masscenter_x + 0.5 + i - 1  # 중심으로부터의 거리
+            # s = -masscenter_x + 0.5 + i - 1  # 중심으로부터의 거리            
+            area = second_moment_simpson(data.iloc[i-2, j], 
+                                         data.iloc[i-1, j], 
+                                         data.iloc[i, j], 
+                                         s)
+            a.append(area)
+        second_moment_area.append(sum(a) * s ** 2)
+
+    return second_moment_area
 
 def cal_run():
+    res = pd.DataFrame()
+
     csv_file = "./offset.csv"
     # 선형 CSV 파일 읽기
     offset = pd.read_csv(csv_file)
@@ -155,11 +180,18 @@ def cal_run():
     masscenter_z = calculate_mass_center_z(offset, waterplane_volume)
     print("masscenter_z =", masscenter_z)
 
+    # 모든 면에 대한 2차 모멘트 계산
+    # second_moment = calculate_second_moment_of_area(offset, masscenter_x,section_weight)
+    second_moment = calculate_second_moment_of_area(offset, masscenter_x)
+    # print("Second Moment of Area I =", second_moment)
+    
+    # ㅆ
+    print(sum(second_moment))
+    print(len(second_moment))
+    second_moment_df = pd.DataFrame(second_moment)
+    second_moment_df.to_csv("./test.csv", index=False)
+    plt.plot(second_moment_df)
+    plt.show()
 
-    # second moment I
-    moment_of_inertia_tranceverse = []
-    calculate_moment_of_inertia(offset, moment_of_inertia_tranceverse, masscenter_x)
-    print(len(moment_of_inertia_tranceverse))
-    print(sum(moment_of_inertia_tranceverse))
 
 cal_run()
