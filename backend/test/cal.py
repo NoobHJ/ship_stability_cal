@@ -125,7 +125,7 @@ def calculate_second_moment_of_area(data, masscenter_x):
     return second_moment_area
 
 def cal_run():
-    res = pd.DataFrame()
+    result = pd.DataFrame()
 
     csv_file = "./offset.csv"
     # 선형 CSV 파일 읽기
@@ -141,6 +141,11 @@ def cal_run():
     waterplane_area = []
     calculate_waterplane_area(offset, waterplane_area)
     half_of_waterplane_area = pd.DataFrame(waterplane_area).sum(axis=1)
+
+    result = pd.concat([result, half_of_waterplane_area], ignore_index=True)
+    result = result.rename(columns={0: 'waterplane_area'})
+
+    print(result)
 
     waterplane_volume = []
     calculate_volume(half_of_waterplane_area,waterplane_volume)
@@ -190,8 +195,6 @@ def cal_run():
     print(len(second_moment))
     second_moment_df = pd.DataFrame(second_moment)
     second_moment_df.to_csv("./test.csv", index=False)
-    plt.plot(second_moment_df)
-    plt.show()
-
+    
 
 cal_run()
